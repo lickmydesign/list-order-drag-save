@@ -16,10 +16,15 @@ if (isset($_POST['do_submit']))  {
 	$output = "";
 	foreach($ids as $index => $id) {
 		$id = (int) $id;
+//		$this->db->trans_start();
 		if ($id != '') {
-			$query = 'UPDATE test_table SET sort_order = '.($index + 1).' WHERE id = '.$id;
-			$output .= $query . "<br /> ";
+			$sort_order = $index+1;
+		    //todo: would be nice to get this into one query (in CI use transactions)
+			$sql = "UPDATE test_table SET sort_order = $sort_order WHERE id = $id";
+//			$this->db->query($sql, array($sort_order, $id));
+			$output .= $sql . "<br /> ";
 		}
+//		$this->db->trans_complete();
 	}
 
 	echo "<p>Would have run: </p>" . $output;
@@ -83,32 +88,27 @@ $people = array(
 
     <main class="container">
 
-        <p class="text-muted">See: <a href="https://davidwalsh.name/mootools-drag-ajax">https://davidwalsh.name/mootools-drag-ajax</a></p>
+        <div class="card bg-light">
+            <div class="card-body">
+                Reference: <a href="https://davidwalsh.name/mootools-drag-ajax">https://davidwalsh.name/mootools-drag-ajax</a>
+            </div>
+        </div>
 
-        <div id="message-box" class="alert alert-warning"><?php echo isset($message) ? $message : ""; ?> Waiting for sortation submission...</div>
+        <div id="message-box" class="alert alert-info mt-3"><?php echo isset($message) ? $message : ""; ?> Waiting for sortation submission...</div>
 
         <p>Drag and drop the elements below:</p>
 
-        <?php
-//		$auto_submit_checked = "";
-//		if (isset($_POST['autoSubmit']) && $_POST['autoSubmit']) {
-//		    $auto_submit_checked = 'checked="checked"';
-//		}
-        ?>
         <form id="dd-form" action="" method="">
-            <!--p>
-                <input type="checkbox" value="1" name="autoSubmit" id="autoSubmit" <?php //echo $auto_submit_checked; ?> />
-                <label for="autoSubmit">Automatically submit on drop event</label>
-            </p-->
             <?php
+            $order = NULL;
             echo "<ul id='sortable-list'>";
             foreach($people as $i => $row) {
-                echo "<li data-id='".$row['id']."'>id:" . $row['id'] . ' | name: <strong>' . $row['name'] . '</strong> (' . $row['display_order'] .")</li>";
+                echo "<li data-id='".$row['id']."'>id:" . $row['id'] . ' | name: <strong>' . $row['name'] . '</strong> (original display order: ' . $row['display_order'] .")</li>";
                 $order[] = $row['id'];
             }
             echo "</ul>";
             ?>
-            <input type="hidden" name="sort_order" id="sort_order" value="<?php echo implode(',',$order);?>" />
+            <input type="hidden" name="sort_order" id="sort_order" value="<?php echo implode(',', $order);?>" />
             <button type="submit" name="submit_butt" class="btn btn-primary" class="btn btn-primary">Submit Sortation</button>
         </form>
     </main>
@@ -122,17 +122,18 @@ $people = array(
         $(function() {
             /* grab important elements */
             var sortInput = $('#sort_order');
-            var autoSubmit = $('#autoSubmit');
             var messageBox = $('#message-box');
             var list = $('#sortable-list');
             /* create requesting function to avoid duplicate code */
             var request = function() {
                 $.ajax({
                     beforeSend: function() {
-                        messageBox.text('Updating the sort order in the database.');
+                        messageBox.removeClass().addClass('alert alert-info mt-3');
+                        messageBox.text('Saving...');
                     },
                     complete: function() {
-                        messageBox.text('Database has been updated.');
+                        messageBox.removeClass().addClass('alert alert-success mt-3');
+                        messageBox.text('Sort order saved.');
                     },
                     data: 'sort_order=' + sortInput[0].value + '&do_submit=1&byajax=1',
                     type: 'post',

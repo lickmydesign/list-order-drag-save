@@ -1,11 +1,17 @@
 # list-order-drag-save
-A list that can be dragged to order automatically saving to the database.
+A list that can be dragged to order, whilst automatically saving to a database (mocked up - view network inspector to see what it would have done on each change).
 
-# Requirements
+Makes use of _jQuery_ UI 'sortable' and 'drag' helpers and _jQuery_ to handle the ajax posts.
 
--jQuery
--jQuery UI
+## Requirements
 
-# Nice to haves:
+- jQuery
+- jQuery UI
 
--Bootstrap
+### Nice to haves:
+
+- Bootstrap
+
+#### Future Improvements
+
+Support multiple lists - It would be good if you could have two or more lists on the same page and they could all work.
