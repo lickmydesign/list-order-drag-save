@@ -60,6 +60,18 @@ $people = array(
 		'display_order' => 4
 	)
 );
+$people2 = array(
+	0 => array(
+		'id' => 5,
+		'name' => 'Mike',
+		'display_order' => 2
+	),
+	1 => array(
+		'id' => 6,
+		'name' => 'Jake',
+		'display_order' => 1
+	)
+);
 ?>
 <html>
 <head>
@@ -69,7 +81,7 @@ $people = array(
         body {
             padding-top: 2em;
         }
-        #sortable-list li	{
+        .sortable-list li	{
             background-color: #ddd;
             border: 1px solid #999;
             cursor: move;
@@ -94,36 +106,66 @@ $people = array(
             </div>
         </div>
 
-        <div id="message-box" class="alert alert-info mt-3"><?php echo isset($message) ? $message : ""; ?> Waiting for sortation submission...</div>
+        <div class="row">
+            <div class="col-md-6">
 
-        <p>Drag and drop the elements below:</p>
+                <p>Drag and drop the elements below:</p>
 
-        <form id="dd-form" action="" method="">
-            <?php
-            $order = NULL;
-            echo "<ul id='sortable-list'>";
-            foreach($people as $i => $row) {
-                echo "<li data-id='".$row['id']."'>id:" . $row['id'] . ' | name: <strong>' . $row['name'] . '</strong> (original display order: ' . $row['display_order'] .")</li>";
-                $order[] = $row['id'];
-            }
-            echo "</ul>";
-            ?>
-            <input type="hidden" name="sort_order" id="sort_order" value="<?php echo implode(',', $order);?>" />
-            <button type="submit" name="submit_butt" class="btn btn-primary" class="btn btn-primary">Submit Sortation</button>
-        </form>
+                <form class="dd-form" action="" method="">
+
+                    <div class="message-box alert alert-info mt-3"><?php echo isset($message) ? $message : ""; ?> Waiting for sortation submission...</div>
+
+                    <?php
+                    $order = NULL;
+                    echo "<ul class='sortable-list'>";
+                    foreach($people as $i => $row) {
+                        echo "<li data-id='".$row['id']."'>id:" . $row['id'] . ' | name: <strong>' . $row['name'] . '</strong> (original display order: ' . $row['display_order'] .")</li>";
+                        $order[] = $row['id'];
+                    }
+                    echo "</ul>";
+                    ?>
+                    <input type="hidden" name="sort_order" id="sort_order" value="<?php echo implode(',', $order);?>" />
+                    <button type="submit" name="submit_butt" class="btn btn-primary">Submit Sortation</button>
+                </form>
+
+            </div> <!-- of .col-md-6 -->
+
+            <div class="col-md-6">
+
+                <p>Drag and drop the elements below:</p>
+
+                <form class="dd-form" action="" method="">
+
+                    <div class="message-box alert alert-info mt-3"><?php echo isset($message) ? $message : ""; ?> Waiting for sortation submission...</div>
+
+					<?php
+					$order_2 = NULL;
+					echo "<ul class='sortable-list'>";
+					foreach($people2 as $i => $row) {
+						echo "<li data-id='".$row['id']."'>id:" . $row['id'] . ' | name: <strong>' . $row['name'] . '</strong> (original display order: ' . $row['display_order'] .")</li>";
+						$order_2[] = $row['id'];
+					}
+					echo "</ul>";
+					?>
+                    <input type="hidden" name="sort_order_2" id="sort_order_2" value="<?php echo implode(',', $order_2);?>" />
+                    <button type="submit" name="submit_butt" class="btn btn-primary">Submit Sortation</button>
+                </form>
+
+            </div> <!-- of .col-md-6 -->
+
+        </div> <!-- of .row -->
     </main>
 
     <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
     <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    <script type="text/javascript">
 
-        /* when the DOM is ready */
+    <script type="text/javascript">
         $(function() {
-            /* grab important elements */
+            /* establish form elements */
             var sortInput = $('#sort_order');
-            var messageBox = $('#message-box');
-            var list = $('#sortable-list');
+            var messageBox = $('.message-box');
+            var list = $('.sortable-list');
             /* create requesting function to avoid duplicate code */
             var request = function() {
                 $.ajax({
@@ -141,34 +183,32 @@ $people = array(
                 });
             };
             /* worker function */
-            var fnSubmit = function(save) {
+            var fnSubmit = function() {
                 var sortOrder = [];
                 list.children('li').each(function(){
                     sortOrder.push($(this).data('id'));
                 });
                 sortInput.val(sortOrder.join(','));
-                // console.log(sortInput.val());
-                if (save) {
-                    request();
-                }
+                console.log(sortInput.val());
+                request();
             };
             /* store values */
             list.children('li').each(function() {
                 var li = $(this);
-                li.data('id',li.attr('data-id'));
+                li.data('id', li.attr('data-id'));
             });
-            /* sortables */
+            /* sortables todo: this needs to workout which form is being used */
             list.sortable({
                 opacity: 0.7,
                 update: function() {
-                    fnSubmit(1); //hard coded, to re-enable the checkbox, use autoSubmit[0].checked
+                    fnSubmit();
                 }
             });
             list.disableSelection();
             /* ajax form submission */
-            $('#dd-form').bind('submit',function(e) {
-                if(e) e.preventDefault();
-                fnSubmit(true);
+            $('.dd-form').bind('submit', function(e) {
+                if (e) e.preventDefault();
+                fnSubmit();
             });
         });
 
