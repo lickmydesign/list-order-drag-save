@@ -111,10 +111,9 @@ $people2 = array(
 
                 <p>Drag and drop the elements below:</p>
 
-                <form class="dd-form" action="" method="">
+                <div class="message-box alert alert-info mt-3"><?php echo isset($message) ? $message : ""; ?> Waiting for sortation submission...</div>
 
-                    <div class="message-box alert alert-info mt-3"><?php echo isset($message) ? $message : ""; ?> Waiting for sortation submission...</div>
-
+                <div class="list_wrap">
                     <?php
                     $order = NULL;
                     echo "<ul class='sortable-list'>";
@@ -124,9 +123,9 @@ $people2 = array(
                     }
                     echo "</ul>";
                     ?>
-                    <input type="hidden" name="sort_order" id="sort_order" value="<?php echo implode(',', $order);?>" />
-                    <button type="submit" name="submit_butt" class="btn btn-primary">Submit Sortation</button>
-                </form>
+                    <input type="hidden" name="list_id" value="1" />
+                    <input type="hidden" name="sort_order" value="<?php echo implode(',', $order);?>" />
+                </div>
 
             </div> <!-- of .col-md-6 -->
 
@@ -134,22 +133,21 @@ $people2 = array(
 
                 <p>Drag and drop the elements below:</p>
 
-                <form class="dd-form" action="" method="">
+                <div class="message-box alert alert-info mt-3"><?php echo isset($message) ? $message : ""; ?> Waiting for sortation submission...</div>
 
-                    <div class="message-box alert alert-info mt-3"><?php echo isset($message) ? $message : ""; ?> Waiting for sortation submission...</div>
-
-					<?php
-					$order_2 = NULL;
-					echo "<ul class='sortable-list'>";
-					foreach($people2 as $i => $row) {
-						echo "<li data-id='".$row['id']."'>id:" . $row['id'] . ' | name: <strong>' . $row['name'] . '</strong> (original display order: ' . $row['display_order'] .")</li>";
-						$order_2[] = $row['id'];
-					}
-					echo "</ul>";
-					?>
-                    <input type="hidden" name="sort_order_2" id="sort_order_2" value="<?php echo implode(',', $order_2);?>" />
-                    <button type="submit" name="submit_butt" class="btn btn-primary">Submit Sortation</button>
-                </form>
+                <div class="list_wrap">
+                    <?php
+                    $order_2 = NULL;
+                    echo "<ul class='sortable-list'>";
+                    foreach($people2 as $i => $row) {
+                        echo "<li data-id='".$row['id']."'>id:" . $row['id'] . ' | name: <strong>' . $row['name'] . '</strong> (original display order: ' . $row['display_order'] .")</li>";
+                        $order_2[] = $row['id'];
+                    }
+                    echo "</ul>";
+                    ?>
+                    <input type="hidden" name="list_id" value="2" />
+                    <input type="hidden" name="sort_order" value="<?php echo implode(',', $order_2);?>" />
+                </div>
 
             </div> <!-- of .col-md-6 -->
 
@@ -162,12 +160,10 @@ $people2 = array(
 
     <script type="text/javascript">
         $(function() {
-            /* establish form elements */
-            var sortInput = $('#sort_order');
             var messageBox = $('.message-box');
             var list = $('.sortable-list');
             /* create requesting function to avoid duplicate code */
-            var request = function() {
+            var request = function(sortOrderList) {
                 $.ajax({
                     beforeSend: function() {
                         messageBox.removeClass().addClass('alert alert-info mt-3');
@@ -177,20 +173,22 @@ $people2 = array(
                         messageBox.removeClass().addClass('alert alert-success mt-3');
                         messageBox.text('Sort order saved.');
                     },
-                    data: 'sort_order=' + sortInput[0].value + '&do_submit=1&byajax=1',
+                    data: 'sort_order=' + sortOrderList + '&do_submit=1&byajax=1',
                     type: 'post',
                     url: '<?php echo $_SERVER["REQUEST_URI"]; ?>'
                 });
             };
             /* worker function */
             var fnSubmit = function() {
+                /* establish form elements */
+                var sortInput = $(this).closest("div.list_wrap").find("input[name='sort_order']");
                 var sortOrder = [];
                 list.children('li').each(function(){
                     sortOrder.push($(this).data('id'));
                 });
                 sortInput.val(sortOrder.join(','));
-                console.log(sortInput.val());
-                request();
+                console.log(sortInput);
+                request(sortOrder);
             };
             /* store values */
             list.children('li').each(function() {
@@ -205,11 +203,6 @@ $people2 = array(
                 }
             });
             list.disableSelection();
-            /* ajax form submission */
-            $('.dd-form').bind('submit', function(e) {
-                if (e) e.preventDefault();
-                fnSubmit();
-            });
         });
 
     </script>
