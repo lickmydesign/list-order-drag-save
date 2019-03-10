@@ -111,12 +111,12 @@ $people2 = array(
 
                 <p>Drag and drop the elements below:</p>
 
-                <div class="message-box alert alert-info mt-3"><?php echo isset($message) ? $message : ""; ?> Waiting for sortation submission...</div>
+                <div id="message-box-1"><?php echo isset($message) ? $message : ""; ?></div>
 
                 <div class="list_wrap">
                     <?php
                     $order = NULL;
-                    echo "<ul class='sortable-list'>";
+                    echo "<ul id='list-1' class='sortable-list' data-messagebox='message-box-1'>";
                     foreach($people as $i => $row) {
                         echo "<li data-id='".$row['id']."'>id:" . $row['id'] . ' | name: <strong>' . $row['name'] . '</strong> (original display order: ' . $row['display_order'] .")</li>";
                         $order[] = $row['id'];
@@ -133,12 +133,12 @@ $people2 = array(
 
                 <p>Drag and drop the elements below:</p>
 
-                <div class="message-box alert alert-info mt-3"><?php echo isset($message) ? $message : ""; ?> Waiting for sortation submission...</div>
+                <div id="message-box-2"><?php echo isset($message) ? $message : ""; ?></div>
 
                 <div class="list_wrap">
                     <?php
                     $order_2 = NULL;
-                    echo "<ul class='sortable-list'>";
+                    echo "<ul id='list-2' class='sortable-list' data-messagebox='message-box-2'>";
                     foreach($people2 as $i => $row) {
                         echo "<li data-id='".$row['id']."'>id:" . $row['id'] . ' | name: <strong>' . $row['name'] . '</strong> (original display order: ' . $row['display_order'] .")</li>";
                         $order_2[] = $row['id'];
@@ -160,18 +160,20 @@ $people2 = array(
 
     <script type="text/javascript">
         $(function() {
-            var messageBox = $('.message-box');
             var list = $('.sortable-list');
             /* create requesting function to avoid duplicate code */
-            var request = function(sortOrderList) {
+            var request = function(sortOrderList, messageBox) {
+                var messageElement = $('#'+messageBox);
                 $.ajax({
                     beforeSend: function() {
-                        messageBox.removeClass().addClass('alert alert-info mt-3');
-                        messageBox.text('Saving...');
+                        messageElement.show();
+                        messageElement.removeClass().addClass('alert alert-info mt-3');
+                        messageElement.text('Saving...');
                     },
                     complete: function() {
-                        messageBox.removeClass().addClass('alert alert-success mt-3');
-                        messageBox.text('Sort order saved.');
+                        messageElement.removeClass().addClass('alert alert-success mt-3');
+                        messageElement.text('Sort order saved.');
+                        messageElement.delay(3000).fadeOut();
                     },
                     data: 'sort_order=' + sortOrderList + '&do_submit=1&byajax=1',
                     type: 'post',
@@ -179,32 +181,31 @@ $people2 = array(
                 });
             };
             /* worker function */
-            var fnSubmit = function() {
+            var fnSubmit = function(messageBox, currentList) {
                 /* establish form elements */
                 var sortInput = $(this).closest("div.list_wrap").find("input[name='sort_order']");
                 var sortOrder = [];
-                list.children('li').each(function(){
+                $('#'+currentList).children('li').each(function(){
                     sortOrder.push($(this).data('id'));
                 });
                 sortInput.val(sortOrder.join(','));
-                console.log(sortInput);
-                request(sortOrder);
+                request(sortOrder, messageBox);
             };
             /* store values */
             list.children('li').each(function() {
                 var li = $(this);
                 li.data('id', li.attr('data-id'));
             });
-            /* sortables todo: this needs to workout which form is being used */
             list.sortable({
                 opacity: 0.7,
-                update: function() {
-                    fnSubmit();
+                update: function(event, ui) {
+                    var messageBox = $(this).data('messagebox');
+                    var currentList = this.id;
+                    fnSubmit(messageBox, currentList);
                 }
             });
             list.disableSelection();
         });
-
     </script>
 </body>
 </html>
