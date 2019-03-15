@@ -123,8 +123,6 @@ $people2 = array(
                     }
                     echo "</ul>";
                     ?>
-                    <input type="hidden" name="list_id" value="1" />
-                    <input type="hidden" name="sort_order" value="<?php echo implode(',', $order);?>" />
                 </div>
 
             </div> <!-- of .col-md-6 -->
@@ -145,8 +143,6 @@ $people2 = array(
                     }
                     echo "</ul>";
                     ?>
-                    <input type="hidden" name="list_id" value="2" />
-                    <input type="hidden" name="sort_order" value="<?php echo implode(',', $order_2);?>" />
                 </div>
 
             </div> <!-- of .col-md-6 -->
@@ -182,13 +178,11 @@ $people2 = array(
             };
             /* worker function */
             var fnSubmit = function(messageBox, currentList) {
-                /* establish form elements */
-                var sortInput = $(this).closest("div.list_wrap").find("input[name='sort_order']");
+                /* collect list order */
                 var sortOrder = [];
                 $('#'+currentList).children('li').each(function(){
                     sortOrder.push($(this).data('id'));
                 });
-                sortInput.val(sortOrder.join(','));
                 request(sortOrder, messageBox);
             };
             /* store values */
