@@ -113,17 +113,13 @@ $people2 = array(
 
                 <div id="message-box-1"><?php echo isset($message) ? $message : ""; ?></div>
 
-                <div class="list_wrap">
-                    <?php
-                    $order = NULL;
-                    echo "<ul id='list-1' class='sortable-list' data-messagebox='message-box-1'>";
-                    foreach($people as $i => $row) {
-                        echo "<li data-id='".$row['id']."'>id:" . $row['id'] . ' | name: <strong>' . $row['name'] . '</strong> (original display order: ' . $row['display_order'] .")</li>";
-                        $order[] = $row['id'];
-                    }
-                    echo "</ul>";
-                    ?>
-                </div>
+                <?php
+                echo "<ul id='list-1' class='sortable-list' data-messagebox='message-box-1'>";
+                foreach($people as $i => $row) {
+                    echo "<li data-id='".$row['id']."'>id:" . $row['id'] . ' | name: <strong>' . $row['name'] . '</strong> (original display order: ' . $row['display_order'] .")</li>";
+                }
+                echo "</ul>";
+                ?>
 
             </div> <!-- of .col-md-6 -->
 
@@ -133,17 +129,13 @@ $people2 = array(
 
                 <div id="message-box-2"><?php echo isset($message) ? $message : ""; ?></div>
 
-                <div class="list_wrap">
-                    <?php
-                    $order_2 = NULL;
-                    echo "<ul id='list-2' class='sortable-list' data-messagebox='message-box-2'>";
-                    foreach($people2 as $i => $row) {
-                        echo "<li data-id='".$row['id']."'>id:" . $row['id'] . ' | name: <strong>' . $row['name'] . '</strong> (original display order: ' . $row['display_order'] .")</li>";
-                        $order_2[] = $row['id'];
-                    }
-                    echo "</ul>";
-                    ?>
-                </div>
+                <?php
+                echo "<ul id='list-2' class='sortable-list' data-messagebox='message-box-2'>";
+                foreach($people2 as $i => $row) {
+                    echo "<li data-id='".$row['id']."'>id:" . $row['id'] . ' | name: <strong>' . $row['name'] . '</strong> (original display order: ' . $row['display_order'] .")</li>";
+                }
+                echo "</ul>";
+                ?>
 
             </div> <!-- of .col-md-6 -->
 
