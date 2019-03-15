@@ -13,3 +13,7 @@ It has been built to support multiple lists on the same page.
 ### Nice to haves:
 
 - Bootstrap
+
+#### Future Improvements...
+
+Would be nice to get it saving to a session, so that it gives the impression of saving to a database. Probably needs a reset button at that stage.
